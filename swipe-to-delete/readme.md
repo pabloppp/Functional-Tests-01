@@ -1,4 +1,7 @@
 # SWIPE TO DELETE
+
+[DEMO](http://cdn.rawgit.com/pabloppp/Modular-Tests-01/master/swipe-to-delete/index.html)
+
 AngularJS directive to create the 'swipe to delete' functionality in lists or whatever you want.
 
 Allows swipe right & left.
