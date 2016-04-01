@@ -20,7 +20,7 @@ var superObject = new cObj(object);
 console.log( superObject.get("foo") );
 console.log( superObject.get("sub") );
 console.log( superObject.get("sub.foo") );
-console.log( superObject.get("fuck"));
+console.log( superObject.get("missing"));
 
 										 
 console.log( superObject.extractFromArray(
