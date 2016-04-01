@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="#FF8348" />
+	<meta name="theme-color" content="#FF8348">
+	<title>TEST</title>
+
+	<style>
+
+	body{
+		background-color: #E3E2E4; //#767E9E;
+		font-family: sans-serif;
+		padding: 0;
+		margin: 0;
+	}
+
+	header{
+		width: 100%;
+		height: 50px;
+		background-color: rgba(0, 0, 0, 0.3);
+		position: fixed;
+		z-index: 99;
+		transition: all 0.3s;
+	}
+
+	header.opaque{
+		background-color: rgba(255, 131, 72, 1);
+	}
+
+	header button{
+		background: none;
+		border: 0;
+		line-height: 50px;
+		color: white;
+		font-size: 1.8em;
+		outline: none;
+	}
+
+	h3{
+		font-size: 1.1em;
+		margin: 0;
+		padding: 0;
+		font-weight: lighter;
+		opacity: 0.5;
+		//text-transform: uppercase;
+		margin-bottom: 5px;
+		padding: 0 5px;
+	}
+
+	.profile-pic{
+		width: 100%;
+		position: relative;
+		max-height: 350px;
+		overflow: hidden;
+		margin-bottom: 10px;
+	}
+
+	.profile-pic img{
+		width: 100%;
+	}
+
+	.profile-pic .data{
+		width: 100%;
+		position: absolute;
+		top: 50px;
+		background-color: rgba(0,0,0,0.3);
+		color: white;
+		padding: 5px;
+		box-sizing: border-box;
+	}
+
+	.profile-pic .data h1{
+		padding: 0;
+		margin: 0;
+		font-size: 1.1em;
+		font-weight: lighter;
+	}
+
+	.profile-pic .data h2{
+		padding: 0;
+		margin: 0;
+		opacity: 0.7;
+		font-size: 0.9em;
+		font-weight: lighter;
+	}
+
+	.profile-pic .data h3{
+		padding: 0;
+		margin: 0;
+		opacity: 0.5;
+		font-size: 1.2em;
+		font-weight: lighter;
+	}
+	.profile-pic .data h3 a{
+		color: white;
+		text-decoration: none;
+	}
+
+	.text-input{
+		//background-color: white;
+		box-sizing: border-box;
+		padding: 5px;
+		display: inline-block;
+		line-height: 37px;
+		width: 100%;
+		max-width: 450px;
+		background-color: rgba(0,0,0,0.1);
+		border-radius: 2px;
+		font-size: 1.5em;
+		margin-bottom: 30px;
+	}
+
+	.text-input .tags{
+		margin-bottom: 5px;
+		vertical-align: middle;
+	}
+
+	.text-input .tags > span{
+		display: inline-block;
+		background-color: #FF8348;
+		color: rgba(255,255,255,0.8);
+		line-height: normal;
+		padding: 3px 7px 3px 10px;
+		box-sizing: border-box;
+		border-radius: 2px;
+		cursor: default;
+		box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+		position: relative;
+	}
+
+	.text-input .tags > span .erase{
+		display: inline-block;
+		background-color: transparent;
+		box-sizing: border-box;
+		width: 14px;
+		height: 14px;
+		line-height: 14px;
+		text-align: center;
+		cursor: pointer;
+		transition: all 0.3s;
+		font-size: 0.6em;
+		vertical-align: middle;
+	}
+
+	.text-input .tags > span .erase:hover{
+		color: #E63B38;
+	}
+
+	.text-input input{
+		outline: none;
+		border: 0;
+		margin: 0;
+		padding: 0;
+		font-size: 1em;
+		background-color:rgba(255,255,255,0.3);
+		padding: 3px 10px;
+		box-sizing: border-box;
+		border-radius: 2px;
+		width: 150px;
+		vertical-align: middle;
+	}
+	.text-input input::-webkit-input-placeholder{
+		color: rgba(0,0,0,0.5);
+	}
+
+	</style>
+</head>
+<body>
+
+	<header id="navbar">
+		<button class="back">◀</button>
+	</header>
+	
+	<div class="profile-pic">
+		<img src="http://api.randomuser.me/portraits/men/49.jpg">
+		<div class="data">
+			<h3><a href="tel:+34123458313">+34123458313</a></h3>
+			<h1>Abdul Ali</h1>
+			<h2>Keko</h2>
+		</div>
+	</div>
+
+	<h3>What I like</h3>
+	<h3 id="debug"></h3>
+	<span class="text-input" onclick="focusOnInput()">
+		<span class="tags" id="tagList">
+		</span>
+		<input id="f-input" type="text" onkeydown="checkIfNewTag(event)" placeholder="...">
+	</span>
+
+	<script>
+
+		var tags = [];
+		var loaded_tags = JSON.parse(localStorage.getItem("tags")) || ["sports"];
+
+		loaded_tags.sort();
+
+		var checkIfNewTag = function(event){
+			//console.log(event);
+			var value = event.target.value.toLowerCase();
+			if(event.keyCode == 13 || event.keyCode == 188 || value[value.length-1] == ','){ //|| event.charCode == 32){
+				event.preventDefault();		
+				if(!value || value.length < 2){
+					//if(event.charCode == 32) event.preventDefault();
+					return;
+				}
+				if(value[value.length-1] == ',') value = value.substring(0, value.length-1);
+				event.target.value = "";
+				addTag(value);
+			}
+			else if(event.keyCode == 8){
+				var value = event.target.value.toLowerCase();
+				if(!value || value.length == 0){
+					event.preventDefault();
+					//console.log("-");
+					var parent = document.getElementById("tagList");
+					//7console.log(parent.childNodes);
+					parent.removeChild(parent.childNodes[parent.childNodes.length-1]);
+					parent.removeChild(parent.childNodes[parent.childNodes.length-1]);
+					tags.splice(tags.length-1, 1);
+					localStorage.setItem("tags", JSON.stringify(tags));
+				}
+			}
+		}
+
+		var addTag = function(value){
+			if(tags.indexOf(value) == -1){
+				document.getElementById("tagList").innerHTML += " <span><span class='value'>"+value+"</span> <span class='erase' onclick='deleteTag(event)'>✕</span></span>";
+				tags.push(value);
+				localStorage.setItem("tags", JSON.stringify(tags));
+				//console.log(tags);
+			}	
+		}
+
+		var deleteTag = function(event){
+			var parent = event.target.parentNode.parentNode;
+			var value = event.target.parentNode.querySelector(".value").innerHTML;
+			parent.removeChild(event.target.parentNode);
+			tags.splice(tags.indexOf(value), 1);
+			localStorage.setItem("tags", JSON.stringify(tags));
+			//console.log(tags);
+		}
+
+		var focusOnInput = function(){
+			document.getElementById("f-input").focus();
+		}
+
+		loaded_tags.forEach(function(tag){
+			addTag(tag);	
+		});
+
+		window.addEventListener("scroll", function(event){
+				//console.log(window.pageYOffset);
+				if(window.pageYOffset > 0){
+					document.getElementById("navbar").classList.add("opaque");
+				}
+				else{
+					document.getElementById("navbar").classList.remove("opaque");
+				}
+		});
+
+	</script>
+	
+</body>
+</html>

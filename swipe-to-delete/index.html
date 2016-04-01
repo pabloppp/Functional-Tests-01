@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+	<meta charset="UTF-8">
+	<title>TEST</title>
+	<meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+	<link rel="stylesheet"href="bower_components/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet"href="style.css">
+	
+	<script src="bower_components/angular/angular.min.js"></script>
+
+	<script src="app.js"></script>
+
+</head>
+<body ng-controller="mainCtrl as main">
+
+	<div class="list-container">
+		<!-- <ul>
+			<li ng-repeat="elem in main.listElements" ng-mousedown="main.mouseDown($event)" ng-mouseup="main.mouseUp($event)" ng-mousemove="main.mouseMove($event)" ng-mouseleave="main.mouseUp($event)">ELEMENT {{elem}}</li>				
+		</ul>	
+
+		<button ng-touchmove="main.test($event)">UNDOSTRES</button>-->
+		<ul ng-smartlist>
+			<li ng-repeat="elem in main.listElements" swiped-right="main.destroy(elem, $event)" swiped-left="main.update(elem, $event)" swiping="main.swiping(elem, $event)">
+				Elemento {{elem.value}}
+				<div class="left-bg red-bg">
+					<span class="test-elem" ng-style="{'opacity': main.opacity}">BORRAR <i class="fa fa-trash"></i></span>
+				</div>
+				<div class="right-bg grey-bg">
+					<span class="test-elem" ng-style="{'opacity': main.opacity}" >
+						<i class="fa fa-refresh" ng-class="{'fa-spin': main.reloading}"></i> 
+						{{main.reloading ? "RECARGANDO" : "RECARGAR"}}
+					</span>
+				</div>
+			</li>
+		</ul>
+
+	</div>
+
+
+	
+</body>
+</html>

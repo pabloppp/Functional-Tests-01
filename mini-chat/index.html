@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<title>TEST</title>
+
+	<script src="//cdn.jsdelivr.net/emojione/2.1.1/lib/js/emojione.min.js"></script>
+	<link rel="stylesheet" href="//cdn.jsdelivr.net/emojione/2.1.1/assets/css/emojione.min.css"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+	<script src="emoji-shortnames.js"></script>
+
+	<style>
+		html, body{
+			background: #444;
+			padding: 10px;
+			font-family: sans-serif;
+		}
+		.container{
+			width: 100%;	
+			max-width: 740px;
+			margin: 0 auto;
+			position: absolute;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: #444;
+			//white-space: nowrap;
+		}
+		#messages{
+			width: calc(100% - 20px);	
+			max-width: 720px;
+			margin: 0 auto;
+			position: absolute;	
+			left: 0;
+			right: 0;
+			top: 20px;
+			padding: 10px 0;
+			height: calc(100% - 100px);
+			overflow-y: scroll;
+		}
+
+		#messages pre{
+			box-sizing: border-box;
+			background-color: #9DD0E3;
+			padding: 5px 10px;
+			border-radius: 3px;	
+			max-width: calc(100% - 30px);
+			margin: 2px;
+			line-height: 25px;
+			font-size: 18px;
+			min-height: 25px;
+			font-family: sans-serif;
+			clear: right;
+			float: right;
+			word-break: break-all;
+			word-wrap: break-word;
+			box-shadow: 0 1px 2px rgba(0,0,0,0.4),
+						inset 0 -1px 0 rgba(255,255,255,0.3);
+		}
+
+		#messages pre img{
+			height: 10px;
+			margin-top: 2px;
+		}
+
+		.realshit{
+			width: calc(100% - 50px);	
+			display: inline-block;
+			position: relative;
+			border-radius: 4px;
+			box-sizing: border-box;
+			padding: 0 5px;
+			margin-right: -5px;
+			margin-bottom: 5px;
+		}
+
+		.inputBox{
+			border: none;
+		    overflow: auto;
+		    outline: none;
+			width: 100%;
+			margin: 0 auto;
+			height: 50px;
+			line-height: 30px;
+			background-color: white;
+			box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+			border-radius: 4px;
+			position: relative;
+			box-sizing: border-box;
+			padding: 10px 10px 10px 45px;
+			outline: none;
+			display: block;
+			//float: left;
+			font-size: 1.2em;
+			vertical-align: bottom;
+			max-height: 150px;
+			overflow-y: scroll;
+			word-break: break;
+			font-family: sans-serif;
+		}
+		.realshit:after{
+			content: "";
+			display: block;
+			position: absolute;
+			top: 0;
+			padding: 0;
+			right: -5px;
+			width: 0;
+			height: 0;
+			border-top: 7px solid white;
+			border-left: 7px solid white;
+			border-bottom: 7px solid transparent;
+			border-right: 7px solid transparent;
+		}
+		.realshit .emojibutton{
+			position: absolute;
+			left: 0;
+			top: 0;
+			z-index: 99;
+		}
+		.realshit .emojibutton i{
+			line-height: 51px;
+			margin-left: 15px;
+			font-size: 1.6em;
+			opacity: 0.7;
+			cursor: pointer;
+		}
+
+		.send{
+			width: 45px;
+			height: 45px;
+			border: 0;
+			border-radius: 999px;
+			color: white;
+			background-color: #7CBD7F;
+			font-size: 25px;
+			line-height: 45px;
+			display: inline-block;
+			vertical-align: bottom;
+			text-align: center;
+			box-shadow: 0 3px 5px rgba(0,0,0,0.2);
+			//float: right;
+			margin-bottom: 10px;
+			margin-right: 5px;
+		}
+
+		[contenteditable=true]:empty:before{
+		  content: attr(placeholder);
+		  display: block; /* For Firefox */
+		  color: rgba(0,0,0,0.2);
+		}
+
+		.emojilist{
+			width: 100%;
+			height: 260px;
+			background-color: white;
+			display: none;
+			position: relative;
+		}
+
+		.emojilist.open{
+			display: block;
+		}
+
+		.emojilist .tabs{
+			width: 100%;
+			height: 40px;
+			background-color:#ccc;
+		}
+
+		.emojilist .tabs span{
+			line-height: 40px;
+			margin: 0 10px;
+			opacity: 0.5;
+		}
+
+		.emojilist .tabs span.selected{
+			background-color: rgba(0,0,0,0.3);
+			padding: 5px;
+		}
+
+		.emojilist .tab-content{
+			position: relative;
+			box-sizing: border-box;
+			width: 100%;
+			padding: 10px 5px;
+			max-height: 220px;	
+			overflow-y: scroll;
+			overflow-x: hidden;
+		}
+
+		.emojilist .tab-content.hidden{
+			display: none;
+		}
+
+		.emojilist .tab-content div{
+			box-sizing: border-box;
+			display: inline-block;
+			width: 35px;
+			text-align: center;
+			margin-bottom: 5px;
+			z-index: 999;
+			cursor: pointer;
+		}
+
+		.emojilist .tab-content img{
+			width: 90%;
+			height: 90%;
+		}
+
+	</style>
+</head>
+<body>
+
+<div id="messages">
+	
+</div>
+
+<div class="container">
+	<div class="realshit">
+		<div class="emojibutton">
+			<i class="fa fa-smile-o" id="emojibutton"></i>
+		</div>
+		<textarea class="inputBox" contenteditable="true" id="textDisplay" placeholder="Type here..."></textarea>
+	</div>
+	<button class="send" id="send">
+		<i class="fa fa-rocket fa-fw"></i>
+	</button>
+	<div class="emojilist" id="emojilist">
+		<div class="tabs">
+			<span class="selected">PEOPLE</span>
+			<span>PEOPLE</span>
+			<span>PEOPLE</span>
+		</div>
+	</div>
+</div>
+	
+	
+<script>
+	var textDisplay = document.getElementById("textDisplay");
+	var sendButton = document.getElementById("send");
+	var messageBox = document.getElementById("messages");
+	var emojilist =  document.getElementById("emojilist");
+
+	var cursor
+
+	textDisplay.addEventListener("focus", function(event){
+		var text = textDisplay.innerText || textDisplay.textContent;
+		this.selectionStart = cursor;
+		this.selectionEnd = cursor;
+	})
+	textDisplay.addEventListener("blur", function(event){
+		var text = textDisplay.innerText || textDisplay.textContent;
+		cursor = this.selectionEnd;
+	});
+	textDisplay.addEventListener("click", function(event){
+		emojilist.classList.remove("open");
+		setTimeout(function(){
+			messageBox.scrollTop = messageBox.scrollHeight; 			
+		}, 100);
+	});
+
+	var resizeInput = function(){
+		//var lines = textDisplay.value.split("\n");
+		//textDisplay.style.overflow = 'hidden';
+        textDisplay.style.height = 0;
+        textDisplay.style.height = textDisplay.scrollHeight + 'px';
+		//console.log(textDisplay.style.height);
+		textDisplay.scrollTop = textDisplay.scrollHeight; 		
+	}
+
+	textDisplay.addEventListener("keyup", function(event){
+		//console.log(event);
+		/*event.preventDefault();
+		console.log(event);
+		textArea.value += String.fromCharCode(event.keyCode);
+		textDisplay.innerHTML = textArea.value;*/
+		//var text = textDisplay.innerText || textDisplay.textContent;
+		//textDisplay.innerHTML = emojione.toImage(textDisplay.innerHTML);
+		//console.log(text);
+		resizeInput();
+	});
+
+	sendButton.addEventListener("click", function(){
+		var text = textDisplay.value;
+		text = text.trim();
+		if(!text){
+			textDisplay.focus();  
+			return;
+		}
+		textDisplay.value = "";
+		var emojimsg = emojione.toImage(text);
+		var span = document.createElement("PRE");
+		span.innerHTML = emojimsg;//.replace(/\n/g, "<br />");;
+		messageBox.appendChild(span); 
+		//messageBox.innerHTML += "<br>"   
+		textDisplay.focus(); 
+		emojilist.classList.remove("open"); 
+		resizeInput();
+		messageBox.scrollTop = messageBox.scrollHeight; 
+	});
+
+	document.getElementById("emojibutton").addEventListener("click", function(event){
+		event.preventDefault()
+		emojilist.classList.toggle("open");
+	});
+
+	var write = function(emoji){
+		textDisplay.value = textDisplay.value.substring(0, cursor)+emoji+textDisplay.value.substring(cursor);	
+		//console.log(cursor);
+		resizeInput();
+	};
+
+	for(var i in emojishortnames){
+		var category = emojishortnames[i];
+		console.log(i);
+
+		var tabdiv = document.createElement("DIV");
+		tabdiv.classList.add("tab-content");
+		if(i != "people") tabdiv.classList.add("hidden");
+		tabdiv.id = i;
+
+		emojilist.appendChild(tabdiv);	
+
+		category.forEach(function(emoji){
+			var div = document.createElement("DIV");
+			div.innerHTML = emojione.toImage(emoji);
+			tabdiv.appendChild(div);	
+			div.addEventListener('click', function() {
+				var e = emoji+"";
+				write(e);
+			});
+		});
+	};
+
+	console.log(emojishortnames);
+
+</script>	
+
+</body>
+</html>
