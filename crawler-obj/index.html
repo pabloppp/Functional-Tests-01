@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>NODEJS TESTER</title>
+
+	<script src="./require.js"></script>
+
+	<style>
+	body, html{
+		margin: 0;
+		padding: 0;
+		background-color: #2A2C3C;
+		font-family: sans-serif;
+		height: 100%;
+		position: relative;
+	}
+
+	.edit-field{
+		width: calc(100% - 20px);
+		height: calc(75% - 10px);
+		margin: 0 auto;
+		position: relative;
+		top: 10px;
+		margin-bottom: 10px;
+		border-radius: 5px 5px 0 0;
+		border: 0;
+		background-color: rgba(255,255,255,0.1);
+		transition: all 0.3s;
+	}
+
+	.edit-field.expanded{
+		height: 85px
+	}
+
+	.edit-field .controls{
+		position: absolute;
+		bottom: 5px;
+		right: 15px;
+	}
+
+	.edit-field .controls button{
+		border: 0;
+		background-color: #4C9053;
+		color: white;
+		font-size: 1.2em;
+		height: 30px;
+		padding: 0 20px;
+		border-radius: 3px;
+		cursor: pointer;
+		border: 2px solid transparent;
+		box-sizing: border-box;
+		outline: none;
+		opacity: 0.6;
+		transition: all 0.3s;
+	}
+
+	.edit-field .controls button:hover{
+		opacity: 1;
+	}
+
+	.edit-field .controls button.warning{
+		color: #FF6060;
+		background: none;
+		border: 2px solid #FF6060;
+	}
+
+	textarea{
+		position: relative;
+		display: block;
+		width: 100%;
+		height: calc(100% - 50px);
+		margin: 0 auto;
+		background: none;
+		border: 0;
+		outline: none;
+		color: white;
+		box-sizing: border-box;
+		padding: 10px 20px;
+		font-size: 1.2em;
+		resize: none;
+		top: 10px;
+		font-weight: lighter;
+	}
+
+	.console{
+		position: relative;
+		width: calc(100% - 20px);
+		margin: 0 auto;
+		height: calc(25% - 10px);
+		background-color: rgba(0,0,0,0.6);
+		border-radius: 0 0 5px 5px;
+		color: #999;
+		box-sizing: border-box;
+		padding: 10px;
+		overflow: scroll;
+		transition: all 0.3s;
+	}
+
+	.console.expanded{
+		height: calc(100% - 105px);
+	}
+
+	.console .expand{
+		background: none;
+		position: absolute;
+		right: 10px;
+		top: 10px;
+		border: 2px solid white;
+		color: white;
+		border-radius: 3px;	
+		transition: all 0.3s;
+		opacity: 0.1;
+		cursor: pointer;
+	}
+
+	.console:hover .expand{
+		opacity: 0.5;
+	}
+
+	.console:hover .expand:hover{
+		opacity: 0.9;
+	}
+
+	.disclaimer{
+		width: calc(100% - 60px);
+		margin: 0 auto;
+		color: white;
+		opacity: 0.5;
+		text-align: center;
+		margin: 40px 0;
+		font-weight: lighter;
+	}
+
+	.disclaimer a{
+		color: #2C65D6;
+		text-decoration: none;
+	}
+	
+	.err{
+		color: #FF6060;
+	}
+
+	</style>
+
+</head>
+<body>
+	
+	<div class="edit-field" id="edit-container">
+		<textarea id="textarea" placeholder="Write here your javascript..."></textarea>
+		<div class="controls">
+			<button class="warning" onclick="clearAll()">CLEAR</button>
+			<button onclick="run()">RUN</button>
+		</div>
+	</div>
+	<div class="console" id="console-container">
+		<div class="content" id="console">//Press RUN to execute javascript</div>
+		<button class="expand" onclick="toggleExpand()" id="expand-button">EXPAND</button>
+	</div>
+
+	<div class="disclaimer">
+		This app uses the module 'require.js' created by <b>letorbi</b> and available at this repository: <a href="https://github.com/letorbi/smoothie/blob/master/standalone/require.js">github.com/letorbi/smoothie/blob/master/standalone/require.js</a>
+	</div>
+	
+	<script>
+		"use strict";
+		var _textarea = document.getElementById("textarea");	
+		var _console = document.getElementById("console");
+
+		var clearAll = function(){
+			console.log("hey");
+			_console.innerHTML = "";
+			_textarea.value = "";
+		}
+
+		var run = function(){
+
+			(function(){
+				var oldLog = console.log;
+				_console.innerHTML = "";
+				console.log = function(log, msg){
+						msg = msg || "log";
+						var res;
+						if(typeof log === 'object'){
+							res = JSON.stringify(log);
+						}
+						else{
+							res = log.toString();
+						}
+						_console.innerHTML += escapeHtml("<"+msg.toUpperCase()+"> "+res)+"<br>";
+				}
+				console.error = function(log){
+					console.log(log, "error");
+				}
+				var code = _textarea.value
+				try{
+					eval(code);
+				}catch(error){
+					_console.innerHTML = "<span class='err'>"+escapeHtml("<ERROR> "+error)+"</span><br>";	
+				}
+
+			})()
+		}
+
+		var toggleExpand = function(){
+			document.getElementById("edit-container").classList.toggle("expanded");
+			document.getElementById("console-container").classList.toggle("expanded");
+			var eb = document.getElementById("expand-button");
+			if(eb.innerHTML == "EXPAND") eb.innerHTML = "REDUCE";
+			else eb.innerHTML = "EXPAND";
+		}
+
+		function escapeHtml(str) {
+		    var div = document.createElement('div');
+		    div.appendChild(document.createTextNode(str));
+		    return div.innerHTML;
+		};
+
+		var loadSampleJS = function(){
+			var filePath = "./server.js";
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.open("GET",filePath,false);
+			xmlhttp.send(null);
+			var fileContent = xmlhttp.responseText;
+			_textarea.value = fileContent;
+			//var fileArray = fileContent.split('\n')
+		}
+		loadSampleJS();
+
+	</script>	
+</body>
+</html>
